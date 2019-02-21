@@ -14,6 +14,7 @@
 
 import six
 import inspect
+from sys import version_info
 import redis
 import redis.sentinel
 import redis_sentinel_url
@@ -155,7 +156,10 @@ class RedisSentinel(object):
 
     @staticmethod
     def _config_from_variables(config, the_class):
-        args = inspect.getargspec(the_class.__init__).args
+        if version_info >=(3,3):
+            args = list(inspect.signature(the_class.__init__).parameters.keys())
+        else:
+            args = inspect.getargspec(the_class.__init__).args
         args.remove('self')
         args.remove('host')
         args.remove('port')
